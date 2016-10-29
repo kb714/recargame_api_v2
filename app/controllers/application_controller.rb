@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::API
+
   def get_pp_key
     '74h3P47WS7Y2IpzkB39IOJBNmDRKURi1Wz5MDcJw'
   end

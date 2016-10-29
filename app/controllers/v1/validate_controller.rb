@@ -24,7 +24,6 @@ class V1::ValidateController < ApplicationController
     if order_model.valid?
       #API validation
       xml_return = sendXmlPincenterApi ifIsValid(amount, identifier, company_decode, order)
-      borrar = xml_return
       xml_return.xpath("//field[@id='b39']").each do |value|
         if value.content.to_s === '00'
           # save order on local database and set auth code
@@ -49,12 +48,10 @@ class V1::ValidateController < ApplicationController
           #send data to client
           return render json: response, status: 200
         else
-          return render json: value.content.to_s, status: 400
+          return render json: company_decode.to_s << '-' << value.content.to_s, status: 400
         end
       end
-
-      bad_response = 'Error validando los datos de la compañía'
-      render json: "#{bad_response}", status: 400
+      render json: 'Error validando los datos de la compañía', status: 400
     else
       render json: order_model.errors.messages, status: 400
     end
