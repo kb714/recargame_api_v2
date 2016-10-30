@@ -5,8 +5,16 @@ class ApplicationController < ActionController::API
   end
 
   def sendXmlPincenterApi(xml_doc)
-    data_return = Net::HTTP.post_form(URI.parse('http://pincenter.recargaweb.cl'), {'XML' => xml_doc})
-    Nokogiri.XML data_return.body
+    begin
+      data_return = Net::HTTP.post_form(URI.parse('http://pincenter.recargaweb.cl'), {'XML' => xml_doc})
+      Nokogiri.XML data_return.body
+    rescue Timeout::Error => exc
+      'ERROR'
+    rescue Errno::ETIMEDOUT => exc
+      'ERROR'
+    rescue
+      'ERROR'
+    end
   end
 
   def getCompany name

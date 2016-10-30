@@ -24,6 +24,9 @@ class V1::ValidateController < ApplicationController
     if order_model.valid?
       #API validation
       xml_return = sendXmlPincenterApi ifIsValid(amount, identifier, company_decode, order)
+      if xml_return == 'ERROR'
+        return render json: "TIMEOUT", status: 400
+      end
       xml_return.xpath("//field[@id='b39']").each do |value|
         if value.content.to_s === '00'
           # save order on local database and set auth code
