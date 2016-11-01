@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  root 'v1/validate#index'
   namespace :v1 do
     post 'validate-operation' => 'validate#validate_operation'
     post 'validate-pay' => 'validate#validate_pay'

@@ -1,4 +1,11 @@
 class V1::ValidateController < ApplicationController
+
+  def index
+    data = V1::Order.all
+    render json: JSON.pretty_generate(JSON.parse(data.to_json))
+    #render json: data._id.to_s
+  end
+
   def validate_operation
     data = validate_operation_params
     company_decode = self.getCompany data[:company]
