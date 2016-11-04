@@ -14,23 +14,17 @@ class V1::ValidateController < ApplicationController
     #check if, use after validate pay
     email = data[:email]
     #local validation
-    order = getOrder
-
-    while V1::Order.where(:order => order).exists?
-      order = getOrder
-    end
-
     order_model = V1::Order.new do |m|
       m.status = 0
-      m.order = order
       m.identifier = identifier
       m.amount = amount
       m.company = company_decode.to_s
       m.email = email
     end
     if order_model.valid?
+      order_model.save
       #API validation
-      xml_return = sendXmlPincenterApi ifIsValid(amount, identifier, company_decode, order)
+      xml_return = sendXmlPincenterApi ifIsValid(amount, identifier, company_decode, order_model.order)
       if xml_return == 'ERROR'
         return render json: "TIMEOUT", status: 400
       end
@@ -43,12 +37,12 @@ class V1::ValidateController < ApplicationController
           order_model.save
           # set form pay data for PayPlus
           key = self.get_pp_key
-          data = "PP_AMOUNT=#{amount}&PP_ORDER=#{order}"
+          data = "PP_AMOUNT=#{amount}&PP_ORDER=#{order_model.order}"
           digest = OpenSSL::Digest.new('sha256')
 
           pp_shop = 399
           pp_amount = amount
-          pp_order = order
+          pp_order = order_model.order
           pp_product = 'Recarga'
           pp_service = "Recarga #{identifier}"
           pp_name = 'RECARGAME.CL'
@@ -88,7 +82,7 @@ class V1::ValidateController < ApplicationController
     params.permit(:order)
   end
 
-  #pincenter XML
+  #pincenter XML, unnused order parameter
   def ifIsValid(amount, identifier, company, order)
     t = Time.now
     return Nokogiri::Slop <<-EOXML
@@ -96,7 +90,7 @@ class V1::ValidateController < ApplicationController
         <field id="b0">0300</field>
         <field id="b3">510000</field>
         <field id="b4">#{amount.to_s}</field>
-        <field id="b11">000049</field>
+        <field id="b11">#{order.to_s}</field>
         <field id="b12">#{t.strftime('%H%M%S').to_s}</field>
         <field id="b13">#{t.strftime('%Y%m%d').to_s}</field>
         <field id="b24">9999</field>
@@ -111,7 +105,7 @@ class V1::ValidateController < ApplicationController
           <subcampo id="11b63">0064</subcampo>
           <subcampo id="12b63">361988</subcampo>
           <subcampo id="14b63">361988</subcampo>
-          <subcampo id="15b63">999999</subcampo>
+          <subcampo id="15b63">000381</subcampo>
           <subcampo id="20b63">14725836</subcampo>
           <subcampo id="61b63">#{company.to_s}</subcampo>
           <subcampo id="65b63">#{identifier.to_s}</subcampo>
@@ -119,9 +113,5 @@ class V1::ValidateController < ApplicationController
          </field>
       </isomsg>
     EOXML
-  end
-
-  def getOrder
-    rand(11 .. 99).to_s << Time.now.strftime('%m%d').to_s << rand(1111 .. 9999).to_s
   end
 end

@@ -4,5 +4,7 @@ Rails.application.routes.draw do
     post 'validate-operation' => 'validate#validate_operation'
     post 'validate-pay' => 'validate#validate_pay'
     post 'pp_notify' => 'pay_notify#pp_notify'
+    #voucher controller
+    post 'voucher' => 'voucher#show'
   end
 end
