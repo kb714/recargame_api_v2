@@ -15,7 +15,8 @@ class V1::VoucherController < ApplicationController
         when '01'
           #Entel
           response = {
-              company: 'ENTEL',
+              company_id: voucher.company,
+              company_name: 'ENTEL',
               date_transaction: Date.strptime(voucher.date_transaction.to_s, '%Y%m%d').strftime('%d/%m/%Y'),
               hour_transaction: Time.strptime(voucher.hour_transaction.to_s, '%H%M%S').strftime('%H:%M:%S'),
               order: voucher.order,
@@ -30,7 +31,8 @@ class V1::VoucherController < ApplicationController
         when '02'
           #Movistar
           response = {
-              company: 'MOVISTAR',
+              company_id: voucher.company,
+              company_name: 'MOVISTAR',
               date_transaction: Date.strptime(voucher.date_transaction.to_s, '%Y%m%d').strftime('%d/%m/%Y'),
               hour_transaction: Time.strptime(voucher.hour_transaction.to_s, '%H%M%S').strftime('%H:%M:%S'),
               order: voucher.order,
@@ -45,7 +47,8 @@ class V1::VoucherController < ApplicationController
         when '03'
           #Claro
           response = {
-              company: 'CLARO',
+              company_id: voucher.company,
+              company_name: 'CLARO',
               date_transaction: Date.strptime(voucher.date_transaction.to_s, '%Y%m%d').strftime('%d/%m/%Y'),
               hour_transaction: Time.strptime(voucher.hour_transaction.to_s, '%H%M%S').strftime('%H:%M:%S'),
               order: voucher.order,
@@ -62,7 +65,8 @@ class V1::VoucherController < ApplicationController
         when '08'
           #GTD
           response = {
-              company: 'GTD',
+              company_id: voucher.company,
+              company_name: 'GTD',
               date_transaction: Date.strptime(voucher.date_transaction.to_s, '%Y%m%d').strftime('%d/%m/%Y'),
               hour_transaction: Time.strptime(voucher.hour_transaction.to_s, '%H%M%S').strftime('%H:%M:%S'),
               order: voucher.order,
@@ -78,7 +82,8 @@ class V1::VoucherController < ApplicationController
         when '09'
           #DirecTV
           response = {
-              company: 'DIRECTV',
+              company_id: voucher.company,
+              company_name: 'DIRECTV',
               date_transaction: Date.strptime(voucher.date_transaction.to_s, '%Y%m%d').strftime('%d/%m/%Y'),
               hour_transaction: Time.strptime(voucher.hour_transaction.to_s, '%H%M%S').strftime('%H:%M:%S'),
               order: voucher.order,
@@ -94,7 +99,8 @@ class V1::VoucherController < ApplicationController
         when '10'
           #ClaroTV
           response = {
-              company: 'CLAROTV',
+              company_id: voucher.company,
+              company_name: 'CLAROTV',
               date_transaction: Date.strptime(voucher.date_transaction.to_s, '%Y%m%d').strftime('%d/%m/%Y'),
               hour_transaction: Time.strptime(voucher.hour_transaction.to_s, '%H%M%S').strftime('%H:%M:%S'),
               order: voucher.order,
@@ -110,7 +116,8 @@ class V1::VoucherController < ApplicationController
         when '11'
           #Wom
           response = {
-              company: 'WOM',
+              company_id: voucher.company,
+              company_name: 'WOM',
               date_transaction: Date.strptime(voucher.date_transaction.to_s, '%Y%m%d').strftime('%d/%m/%Y'),
               hour_transaction: Time.strptime(voucher.hour_transaction.to_s, '%H%M%S').strftime('%H:%M:%S'),
               order: voucher.order,
@@ -125,7 +132,8 @@ class V1::VoucherController < ApplicationController
         when '12'
           #VTR
           response = {
-              company: 'VTR',
+              company_id: voucher.company,
+              company_name: 'VTR',
               date_transaction: Date.strptime(voucher.date_transaction.to_s, '%Y%m%d').strftime('%d/%m/%Y'),
               hour_transaction: Time.strptime(voucher.hour_transaction.to_s, '%H%M%S').strftime('%H:%M:%S'),
               order: voucher.order,
@@ -142,7 +150,8 @@ class V1::VoucherController < ApplicationController
         when '13'
           #Claro Multimedia
           response = {
-              company: 'CLAROMULTIMEDIA',
+              company_id: voucher.company,
+              company_name: 'CLAROMULTIMEDIA',
               date_transaction: Date.strptime(voucher.date_transaction.to_s, '%Y%m%d').strftime('%d/%m/%Y'),
               hour_transaction: Time.strptime(voucher.hour_transaction.to_s, '%H%M%S').strftime('%H:%M:%S'),
               order: voucher.order,
@@ -157,7 +166,8 @@ class V1::VoucherController < ApplicationController
         when '14'
           #Virgin
           response = {
-              company: 'VIRGIN',
+              company_id: voucher.company,
+              company_name: 'VIRGIN',
               date_transaction: Date.strptime(voucher.date_transaction.to_s, '%Y%m%d').strftime('%d/%m/%Y'),
               hour_transaction: Time.strptime(voucher.hour_transaction.to_s, '%H%M%S').strftime('%H:%M:%S'),
               order: voucher.order,
@@ -172,7 +182,8 @@ class V1::VoucherController < ApplicationController
         when '16'
           #Gtel
           response = {
-              company: 'GTEL',
+              company_id: voucher.company,
+              company_name: 'GTEL',
               date_transaction: Date.strptime(voucher.date_transaction.to_s, '%Y%m%d').strftime('%d/%m/%Y'),
               hour_transaction: Time.strptime(voucher.hour_transaction.to_s, '%H%M%S').strftime('%H:%M:%S'),
               order: voucher.order,
@@ -187,7 +198,8 @@ class V1::VoucherController < ApplicationController
         when '17'
           #Falabella
           response = {
-              company: 'FALABELLA',
+              company_id: voucher.company,
+              company_name: 'FALABELLA',
               date_transaction: Date.strptime(voucher.date_transaction.to_s, '%Y%m%d').strftime('%d/%m/%Y'),
               hour_transaction: Time.strptime(voucher.hour_transaction.to_s, '%H%M%S').strftime('%H:%M:%S'),
               order: voucher.order,
@@ -202,7 +214,8 @@ class V1::VoucherController < ApplicationController
         when '18'
           #Claro fijo inalambrico
           response = {
-              company: 'CLAROFIJOINALAMBRICO',
+              company_id: voucher.company,
+              company_name: 'CLAROFIJOINALAMBRICO',
               date_transaction: Date.strptime(voucher.date_transaction.to_s, '%Y%m%d').strftime('%d/%m/%Y'),
               hour_transaction: Time.strptime(voucher.hour_transaction.to_s, '%H%M%S').strftime('%H:%M:%S'),
               order: voucher.order,
