@@ -110,7 +110,7 @@ class V1::PayNotifyController < ApplicationController
 
   #pincenter XML
   def confirm(amount, identifier, company, auth_code)
-    t = Time.now
+    t = Time.now.in_time_zone('America/Santiago')
     return Nokogiri::Slop <<-EOXML
       <isomsg>
         <field id="b0">0300</field>
