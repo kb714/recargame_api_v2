@@ -48,6 +48,7 @@ class V1::PayNotifyController < ApplicationController
             render json: 'ok', status: 200
           else
             #RETRY
+            order_model.response = xml_return
             xml_return = sendXmlPincenterApi(re_confirm(order_model.amount, order_model.identifier, order_model.company, order_model.auth_code))
             xml_return.xpath("//field[@id='b39']").each do |recode|
               if recode.content.to_s === '00'
@@ -83,8 +84,9 @@ class V1::PayNotifyController < ApplicationController
               else
                 #RETRY
                 #PAY ERROR
+                order_model.response << xml_return
                 order_model.status = 6
-                order_model.response = "intento: #{code.content.to_s} reintento error: #{recode.content.to_s}"
+                order_model.response << "intento: #{code.content.to_s} reintento error: #{recode.content.to_s}"
                 order_model.save
                 render json: 'ok', status: 200
               end

@@ -56,7 +56,7 @@ class V1::ValidateController < ApplicationController
           #send data to client
           return render json: response, status: 200
         else
-          return render json: company_decode.to_s << '-' << value.content.to_s, status: 400
+          return render json: "#{company_decode.to_s} #{value.content.to_s}", status: 400
         end
       end
       render json: 'Error validando los datos de la compañía', status: 400
