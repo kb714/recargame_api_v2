@@ -84,7 +84,7 @@ class V1::PayNotifyController < ApplicationController
                 #RETRY
                 #PAY ERROR
                 order_model.status = 6
-                order_model.response = 'reintento error=' << recode.content.to_s
+                order_model.response = "intento: #{code.content.to_s} reintento error: #{recode.content.to_s}"
                 order_model.save
                 render json: 'ok', status: 200
               end

@@ -6,11 +6,18 @@ class ApplicationController < ActionController::API
 
   def sendXmlPincenterApi(xml_doc)
     begin
-      data_return = Net::HTTP.post_form(URI.parse('http://pincenter.recargaweb.cl'), {'XML' => xml_doc})
-      Nokogiri.XML data_return.body
+      hostname = '200.111.44.187'
+      port = 7987
+      socket = TCPSocket.open(hostname, port)
+      socket << xml_doc
+      response = socket.readpartial 4096
+      socket.close
+      Nokogiri.XML response
     rescue Timeout::Error => exc
       'ERROR'
     rescue Errno::ETIMEDOUT => exc
+      'ERROR'
+    rescue EOFError
       'ERROR'
     rescue
       'ERROR'

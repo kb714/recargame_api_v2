@@ -1,9 +1,13 @@
 class V1::ValidateController < ApplicationController
 
   def index
+    #V1::Order.delete_all
     data = V1::Order.order(:created_at => 'desc').all
-    render json: JSON.pretty_generate(JSON.parse(data.to_json))
-    #render json: data._id.to_s
+    if data.exists?
+      render json: JSON.pretty_generate(JSON.parse(data.to_json))
+    else
+      render json: "no content"
+    end
   end
 
   def validate_operation
@@ -84,7 +88,8 @@ class V1::ValidateController < ApplicationController
 
   #pincenter XML, unnused order parameter
   def ifIsValid(amount, identifier, company, order)
-    t = Time.now.in_time_zone('America/Santiago')
+    t = Time.now
+    t = t - 10800
     return Nokogiri::Slop <<-EOXML
       <isomsg>
         <field id="b0">0300</field>
