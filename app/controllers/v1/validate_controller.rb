@@ -32,12 +32,12 @@ class V1::ValidateController < ApplicationController
           order_model.save
           # set form pay data for PayPlus
           key = self.get_pp_key
-          data = "PP_AMOUNT=#{order_model.amount}&PP_ORDER=#{order_model.order}"
+          concatenate = "PP_AMOUNT=#{order_model.amount}&PP_ORDER=#{order_model.order}"
           digest = OpenSSL::Digest.new('sha256')
-          pp_hash = OpenSSL::HMAC.hexdigest(digest, key, data)
+          hash = OpenSSL::HMAC.hexdigest(digest, key, concatenate)
           response = {pp_shop: self.get_pp_shop, pp_amount: order_model.amount, pp_order: order_model.order,
                       pp_product: "Recarga #{data[:company]}", pp_service: "Recarga #{order_model.identifier}",
-                      pp_name: "Recargame.cl DEV ENV", pp_hash: pp_hash}
+                      pp_name: "Recargame.cl DEV ENV", pp_hash: hash}
           #send data to client
           return render json: response, status: 200
         else
