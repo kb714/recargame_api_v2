@@ -4,6 +4,10 @@ class ApplicationController < ActionController::API
     '74h3P47WS7Y2IpzkB39IOJBNmDRKURi1Wz5MDcJw'
   end
 
+  def get_pp_shop
+    '399'
+  end
+
   def sendXmlPincenterApi(xml_doc)
     begin
       #Rails.env.development

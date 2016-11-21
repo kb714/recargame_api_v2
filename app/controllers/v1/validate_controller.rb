@@ -13,18 +13,7 @@ class V1::ValidateController < ApplicationController
   def validate_operation
     data = validate_operation_params
     company_decode = self.getCompany data[:company]
-    identifier = data[:identifier]
-    amount = data[:amount]
-    #check if, use after validate pay
-    email = data[:email]
     #local validation
-    #order_model = V1::Order.new do |m|
-    #  m.status = 0
-    #  m.identifier = identifier
-    #  m.amount = amount
-    #  m.company = company_decode.to_s
-    #  m.email = email
-    #end
     order_model = V1::Order.new
     order_model.build(company_decode, data)
     if order_model.valid?
@@ -45,16 +34,10 @@ class V1::ValidateController < ApplicationController
           key = self.get_pp_key
           data = "PP_AMOUNT=#{order_model.amount}&PP_ORDER=#{order_model.order}"
           digest = OpenSSL::Digest.new('sha256')
-
-          pp_shop = 399
-          pp_amount = order_model.amount
-          pp_order = order_model.order
-          pp_product = 'Recarga'
-          pp_service = "Recarga #{order_model.identifier}"
-          pp_name = 'RECARGAME.CL'
           pp_hash = OpenSSL::HMAC.hexdigest(digest, key, data)
-          response = {pp_shop: pp_shop, pp_amount: pp_amount, pp_order: pp_order, pp_product: pp_product,
-                      pp_service: pp_service, pp_name: pp_name, pp_hash: pp_hash}
+          response = {pp_shop: self.get_pp_shop, pp_amount: order_model.amount, pp_order: order_model.order,
+                      pp_product: "Recarga #{data[:company]}", pp_service: "Recarga #{order_model.identifier}",
+                      pp_name: "Recargame.cl DEV ENV", pp_hash: pp_hash}
           #send data to client
           return render json: response, status: 200
         else
@@ -92,7 +75,7 @@ class V1::ValidateController < ApplicationController
   def ifIsValid(amount, identifier, company, order)
     t = Time.now
     t = t - 10800
-    return Nokogiri::Slop <<-EOXML
+    Nokogiri::Slop <<-EOXML
       <isomsg>
         <field id="b0">0300</field>
         <field id="b3">510000</field>
