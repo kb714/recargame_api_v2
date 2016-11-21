@@ -38,6 +38,14 @@ class V1::Order
 
   before_create :setOrderNumber
 
+  def build(company, data)
+    self.status = 0
+    self.identifier = data[:identifier]
+    self.amount = data[:amount]
+    self.company = company.to_s
+    self.email = data[:email]
+  end
+
   protected
   def setOrderNumber
     order = getOrderNumber

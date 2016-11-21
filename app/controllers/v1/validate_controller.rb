@@ -13,22 +13,14 @@ class V1::ValidateController < ApplicationController
   def validate_operation
     data = validate_operation_params
     company_decode = self.getCompany data[:company]
-    identifier = data[:identifier]
-    amount = data[:amount]
     #check if, use after validate pay
-    email = data[:email]
     #local validation
-    order_model = V1::Order.new do |m|
-      m.status = 0
-      m.identifier = identifier
-      m.amount = amount
-      m.company = company_decode.to_s
-      m.email = email
-    end
+    order_model = V1::Order.new
+    order_model.build(company_decode, data)
     if order_model.valid?
       order_model.save
       #API validation
-      xml_return = sendXmlPincenterApi ifIsValid(amount, identifier, company_decode, order_model.order)
+      xml_return = sendXmlPincenterApi ifIsValid(data[:amount], data[:identifier], company_decode, order_model.order)
       if xml_return == 'ERROR'
         return render json: "TIMEOUT", status: 400
       end
@@ -41,14 +33,14 @@ class V1::ValidateController < ApplicationController
           order_model.save
           # set form pay data for PayPlus
           key = self.get_pp_key
-          data = "PP_AMOUNT=#{amount}&PP_ORDER=#{order_model.order}"
+          data = "PP_AMOUNT=#{data[:amount]}&PP_ORDER=#{order_model.order}"
           digest = OpenSSL::Digest.new('sha256')
 
           pp_shop = 399
-          pp_amount = amount
+          pp_amount = data[:amount]
           pp_order = order_model.order
           pp_product = 'Recarga'
-          pp_service = "Recarga #{identifier}"
+          pp_service = "Recarga #{data[:identifier]}"
           pp_name = 'RECARGAME.CL'
           pp_hash = OpenSSL::HMAC.hexdigest(digest, key, data)
           response = {pp_shop: pp_shop, pp_amount: pp_amount, pp_order: pp_order, pp_product: pp_product,
