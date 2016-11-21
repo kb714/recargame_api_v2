@@ -6,6 +6,7 @@ class ApplicationController < ActionController::API
 
   def sendXmlPincenterApi(xml_doc)
     begin
+      #Rails.env.development
       hostname = '200.111.44.187'
       port = 7987
       socket = TCPSocket.open(hostname, port)

@@ -37,7 +37,7 @@ class V1::ValidateController < ApplicationController
           digest = OpenSSL::Digest.new('sha256')
 
           pp_shop = 399
-          pp_amount = data[:amount]
+          pp_amount = data[:amount].to_s
           pp_order = order_model.order
           pp_product = 'Recarga'
           pp_service = "Recarga #{data[:identifier]}"
