@@ -10,21 +10,27 @@ class ApplicationController < ActionController::API
 
   def sendXmlPincenterApi(xml_doc)
     begin
-      #Rails.env.development
-      hostname = '200.111.44.187'
-      port = 7987
-      socket = TCPSocket.open(hostname, port)
-      socket << xml_doc
-      response = socket.readpartial 4096
-      socket.close
-      Nokogiri.XML response
-    rescue Timeout::Error => exc
-      'ERROR'
-    rescue Errno::ETIMEDOUT => exc
-      'ERROR'
-    rescue EOFError
-      'ERROR'
-    rescue
+      Timeout.timeout(20) do
+        begin
+          #Rails.env.development
+          hostname = '200.111.44.187'
+          port = 7987
+          socket = TCPSocket.open(hostname, port)
+          socket << xml_doc
+          response = socket.readpartial 4096
+          socket.close
+          Nokogiri.XML response
+        rescue Timeout::Error => exc
+          'ERROR'
+        rescue Errno::ETIMEDOUT => exc
+          'ERROR'
+        rescue EOFError
+          'ERROR'
+        rescue
+          'ERROR'
+        end
+      end
+    rescue Timeout::Error
       'ERROR'
     end
   end
