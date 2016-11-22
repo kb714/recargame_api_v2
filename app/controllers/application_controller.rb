@@ -18,9 +18,12 @@ class ApplicationController < ActionController::API
     # s << xml_doc
     rs, = IO.select([s], [], [], timeout)
     if rs
-      s.write(xml_doc)
-      response = s.readpartial(4096)
       s.close
+      sleep(3)
+      socket = TCPSocket.open(host, port)
+      socket << xml_doc
+      response = socket.readpartial 4096
+      socket.close
       Nokogiri.XML response
     else
       s.close
