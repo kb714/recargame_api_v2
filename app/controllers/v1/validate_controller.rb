@@ -75,8 +75,7 @@ class V1::ValidateController < ApplicationController
 
   #pincenter XML, unnused order parameter
   def ifIsValid(amount, identifier, company, order)
-    t = Time.now
-    t = t - 10800
+    t = Time.now - 10800
     Nokogiri::Slop <<-EOXML
       <isomsg>
         <field id="b0">0300</field>

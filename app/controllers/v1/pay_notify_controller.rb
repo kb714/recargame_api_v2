@@ -114,13 +114,13 @@ class V1::PayNotifyController < ApplicationController
 
   #pincenter XML
   def confirm(amount, identifier, company, auth_code, order)
-    t = Time.now.in_time_zone('America/Santiago')
+    t = Time.now - 10800
     return Nokogiri::Slop <<-EOXML
       <isomsg>
         <field id="b0">0300</field>
         <field id="b3">520000</field>
         <field id="b4">#{amount.to_s}</field>
-        <field id="b11">000049</field>
+        <field id="b11">#{order.to_s}</field>
         <field id="b12">#{t.strftime('%H%M%S').to_s}</field>
         <field id="b13">#{t.strftime('%Y%m%d').to_s}</field>
         <field id="b24">9999</field>
@@ -135,7 +135,7 @@ class V1::PayNotifyController < ApplicationController
           <subcampo id="11b63">0064</subcampo>
           <subcampo id="12b63">361988</subcampo>
           <subcampo id="14b63">361988</subcampo>
-          <subcampo id="15b63">999999</subcampo>
+          <subcampo id="15b63">000381</subcampo>
           <subcampo id="20b63">#{order.to_s}</subcampo>
           <subcampo id="61b63">#{company.to_s}</subcampo>
           <subcampo id="65b63">#{identifier.to_s}</subcampo>
@@ -146,13 +146,13 @@ class V1::PayNotifyController < ApplicationController
     EOXML
   end
   def re_confirm(amount, identifier, company, auth_code, order)
-    t = Time.now
+    t = Time.now - 10800
     return Nokogiri::Slop <<-EOXML
       <isomsg>
         <field id="b0">0380</field>
         <field id="b3">520000</field>
         <field id="b4">#{amount.to_s}</field>
-        <field id="b11">000049</field>
+        <field id="b11">#{order.to_s}</field>
         <field id="b12">#{t.strftime('%H%M%S').to_s}</field>
         <field id="b13">#{t.strftime('%Y%m%d').to_s}</field>
         <field id="b24">9999</field>
@@ -167,7 +167,7 @@ class V1::PayNotifyController < ApplicationController
           <subcampo id="11b63">0064</subcampo>
           <subcampo id="12b63">361988</subcampo>
           <subcampo id="14b63">361988</subcampo>
-          <subcampo id="15b63">999999</subcampo>
+          <subcampo id="15b63">000381</subcampo>
           <subcampo id="20b63">#{order.to_s}</subcampo>
           <subcampo id="61b63">#{company.to_s}</subcampo>
           <subcampo id="65b63">#{identifier.to_s}</subcampo>
