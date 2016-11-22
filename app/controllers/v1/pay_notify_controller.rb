@@ -16,6 +16,17 @@ class V1::PayNotifyController < ApplicationController
         #CONFIRM PINCENTER
         xml_return = sendXmlPincenterApi(confirm(order_model.amount, order_model.identifier, order_model.company,
                                                  order_model.auth_code, order_model.order))
+        if xml_return == 'ERROR'
+          xml_return = sendXmlPincenterApi(re_confirm(order_model.amount, order_model.identifier,
+                                                      order_model.company, order_model.auth_code, order_model.order))
+          if xml_return == 'ERROR'
+            order_model.response << xml_return
+            order_model.status = 6
+            order_model.response << "ERROR AL EFECTUAR LA RECARGA, PAGO CONFIRMADO - REALIZAR RECARGA MANUAL O DEVOLUCION"
+            order_model.save
+            render json: 'ok', status: 200
+          end
+        end
         xml_return.xpath("//field[@id='b39']").each do |code|
           if code.content.to_s === '00'
             #OK
