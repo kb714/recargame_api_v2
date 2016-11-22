@@ -9,51 +9,36 @@ class ApplicationController < ActionController::API
   end
 
   def sendXmlPincenterApi(xml_doc)
-    host = '200.111.44.187'
-    port = 7987
-    timeout = 10
-
-    s = Socket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)
-    s.connect(Socket.pack_sockaddr_in(port, host))
-    # s << xml_doc
-    rs, = IO.select([s], [], [], timeout)
-    if rs
-      s.close
-      sleep(3)
-      socket = TCPSocket.open(host, port)
-      socket << xml_doc
-      response = socket.readpartial 4096
-      socket.close
-      Nokogiri.XML response
-    else
-      s.close
+    @socket
+    begin
+      Timeout.timeout(20) do
+        begin
+          #Rails.env.development
+          hostname = '200.111.44.187'
+          port = 7987
+          @socket = TCPSocket.open(hostname, port)
+          @socket << xml_doc
+          response = @socket.readpartial 4096
+          @socket.close
+          Nokogiri.XML response
+        rescue Timeout::Error => exc
+          @socket.close
+          'ERROR'
+        rescue Errno::ETIMEDOUT => exc
+          @socket.close
+          'ERROR'
+        rescue EOFError
+          @socket.close
+          'ERROR'
+        rescue
+          @socket.close
+          'ERROR'
+        end
+      end
+    rescue Timeout::Error
+      @socket.close
       'ERROR'
     end
-    #begin
-    #  Timeout.timeout(20) do
-    #    begin
-    #      #Rails.env.development
-    #      hostname = '200.111.44.187'
-    #      port = 7987
-    #      socket = TCPSocket.open(hostname, port)
-    #      socket << xml_doc
-    #      response = socket.readpartial 4096
-    #      socket.close
-    #      Nokogiri.XML response
-    #    rescue Timeout::Error => exc
-    #      'ERROR'
-    #    rescue Errno::ETIMEDOUT => exc
-    #      'ERROR'
-    #    rescue EOFError
-    #      'ERROR'
-    #    rescue
-    #      'ERROR'
-    #    end
-    #  end
-    #rescue Timeout::Error
-    #  socket.close
-    #  'ERROR'
-    #end
   end
 
   def getCompany name
