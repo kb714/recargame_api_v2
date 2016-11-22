@@ -18,7 +18,7 @@ class ApplicationController < ActionController::API
     # s << xml_doc
     rs, = IO.select([s], [], [], timeout)
     if rs
-      s << xml_doc
+      s.write(xml_doc)
       response = s.readpartial(4096)
       s.close
       Nokogiri.XML response
