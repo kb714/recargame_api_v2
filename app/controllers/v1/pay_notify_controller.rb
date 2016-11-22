@@ -14,7 +14,8 @@ class V1::PayNotifyController < ApplicationController
       order_model = V1::Order.find_by(order: order)
       if status.to_i == 4 && order_model.status.to_i == 0
         #CONFIRM PINCENTER
-        xml_return = sendXmlPincenterApi(confirm(order_model.amount, order_model.identifier, order_model.company, order_model.auth_code))
+        xml_return = sendXmlPincenterApi(confirm(order_model.amount, order_model.identifier, order_model.company,
+                                                 order_model.auth_code, order_model.order))
         xml_return.xpath("//field[@id='b39']").each do |code|
           if code.content.to_s === '00'
             #OK
@@ -49,7 +50,8 @@ class V1::PayNotifyController < ApplicationController
           else
             #RETRY
             order_model.response = xml_return
-            xml_return = sendXmlPincenterApi(re_confirm(order_model.amount, order_model.identifier, order_model.company, order_model.auth_code))
+            xml_return = sendXmlPincenterApi(re_confirm(order_model.amount, order_model.identifier,
+                                                        order_model.company, order_model.auth_code, order_model.order))
             xml_return.xpath("//field[@id='b39']").each do |recode|
               if recode.content.to_s === '00'
                 #OK
@@ -111,7 +113,7 @@ class V1::PayNotifyController < ApplicationController
   end
 
   #pincenter XML
-  def confirm(amount, identifier, company, auth_code)
+  def confirm(amount, identifier, company, auth_code, order)
     t = Time.now.in_time_zone('America/Santiago')
     return Nokogiri::Slop <<-EOXML
       <isomsg>
@@ -134,7 +136,7 @@ class V1::PayNotifyController < ApplicationController
           <subcampo id="12b63">361988</subcampo>
           <subcampo id="14b63">361988</subcampo>
           <subcampo id="15b63">999999</subcampo>
-          <subcampo id="20b63">14725836</subcampo>
+          <subcampo id="20b63">#{order.to_s}</subcampo>
           <subcampo id="61b63">#{company.to_s}</subcampo>
           <subcampo id="65b63">#{identifier.to_s}</subcampo>
           <subcampo id="66b63">S</subcampo>
@@ -143,7 +145,7 @@ class V1::PayNotifyController < ApplicationController
       </isomsg>
     EOXML
   end
-  def re_confirm(amount, identifier, company, auth_code)
+  def re_confirm(amount, identifier, company, auth_code, order)
     t = Time.now
     return Nokogiri::Slop <<-EOXML
       <isomsg>
@@ -166,7 +168,7 @@ class V1::PayNotifyController < ApplicationController
           <subcampo id="12b63">361988</subcampo>
           <subcampo id="14b63">361988</subcampo>
           <subcampo id="15b63">999999</subcampo>
-          <subcampo id="20b63">14725836</subcampo>
+          <subcampo id="20b63">#{order.to_s}</subcampo>
           <subcampo id="61b63">#{company.to_s}</subcampo>
           <subcampo id="65b63">#{identifier.to_s}</subcampo>
           <subcampo id="66b63">S</subcampo>

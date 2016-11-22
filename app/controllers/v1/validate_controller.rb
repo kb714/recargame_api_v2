@@ -19,7 +19,9 @@ class V1::ValidateController < ApplicationController
     if order_model.valid?
       order_model.save
       #API validation
-      xml_return = sendXmlPincenterApi ifIsValid(order_model.amount, order_model.identifier, company_decode, order_model.order)
+      xml_return = sendXmlPincenterApi(ifIsValid(order_model.amount,
+                                                 order_model.identifier,
+                                                 company_decode, order_model.order))
       if xml_return == 'ERROR'
         return render json: "TIMEOUT", status: 400
       end
@@ -96,7 +98,7 @@ class V1::ValidateController < ApplicationController
           <subcampo id="12b63">361988</subcampo>
           <subcampo id="14b63">361988</subcampo>
           <subcampo id="15b63">000381</subcampo>
-          <subcampo id="20b63">14725836</subcampo>
+          <subcampo id="20b63">#{order.to_s}</subcampo>
           <subcampo id="61b63">#{company.to_s}</subcampo>
           <subcampo id="65b63">#{identifier.to_s}</subcampo>
           <subcampo id="66b63">S</subcampo>
