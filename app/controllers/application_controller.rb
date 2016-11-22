@@ -36,7 +36,7 @@ class ApplicationController < ActionController::API
     #  'ERROR'
     #end
     addr = Socket.getaddrinfo(hostname, nil)
-    sockaddr = Socket.pack_sockaddr_in(port, addr[0][4])
+    sockaddr = Socket.pack_sockaddr_in(port, hostname)
 
     Socket.new(Socket.const_get(addr[0][0]), Socket::SOCK_STREAM, 0).tap do |socket|
       socket.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1)
