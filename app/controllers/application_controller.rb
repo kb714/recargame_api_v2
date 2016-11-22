@@ -15,10 +15,10 @@ class ApplicationController < ActionController::API
 
     s = Socket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)
     s.connect(Socket.pack_sockaddr_in(port, host))
-
+    s << xml_doc
     rs, = IO.select([s], [], [], timeout)
     if rs
-      rs.puts(xml_doc)
+      #rs.puts(xml_doc)
       response = rs[0].readpartial(4096)
       s.close
       Nokogiri.XML response
