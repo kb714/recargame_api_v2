@@ -54,12 +54,14 @@ class ApplicationController < ActionController::API
           begin
             # Verify there is now a good connection
             socket.connect_nonblock(sockaddr)
-          rescue Errno::EISCONN
-            # Good news everybody, the socket is connected!
             socket << xml_doc
             response = socket.readpartial 4096
             socket.close
             Nokogiri.XML response
+          rescue Errno::EISCONN
+            # Good news everybody, the socket is connected!
+            socket.close
+            'ERROR'
           rescue
             # An unexpected exception was raised - the connection is no good.
             socket.close
