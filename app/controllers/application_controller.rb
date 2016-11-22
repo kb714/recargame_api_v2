@@ -11,14 +11,14 @@ class ApplicationController < ActionController::API
   def sendXmlPincenterApi(xml_doc)
     host = '200.111.44.187'
     port = 7987
-    timeout = 20
+    timeout = 10
 
     s = Socket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)
     s.connect(Socket.pack_sockaddr_in(port, host))
 
     rs, = IO.select([s], [], [], timeout)
     if rs
-      rs[0].write(xml_doc)
+      rs.write(xml_doc)
       response = rs[0].readpartial(4096)
       s.close
       Nokogiri.XML response
