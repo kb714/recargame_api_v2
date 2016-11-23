@@ -22,7 +22,7 @@ class V1::PayNotifyController < ApplicationController
           order_model.response = 'Primer ERROR reintento|'
           if xml_return == 'ERROR'
             order_model.response << xml_return
-            order_model.status = 6
+            order_model.status = 8
             order_model.response << "ERROR AL EFECTUAR LA RECARGA, PAGO CONFIRMADO - REALIZAR RECARGA MANUAL O DEVOLUCION"
             order_model.save
             render json: 'ok', status: 200
