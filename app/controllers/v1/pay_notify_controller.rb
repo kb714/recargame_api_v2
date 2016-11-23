@@ -55,56 +55,15 @@ class V1::PayNotifyController < ApplicationController
             xml_return.xpath("//subcampo[@id='69b63']").each do |auth_code|
               order_model.auth_code = auth_code.content.to_s
             end
-            #PAY SUCCESS
+            #SELL SUCCESS
             order_model.status = 4
             order_model.save
             render json: 'ok', status: 200
           else
-            #RETRY
-            order_model.response = xml_return
-            xml_return = sendXmlPincenterApi(re_confirm(order_model.amount, order_model.identifier,
-                                                        order_model.company, order_model.auth_code, order_model.order))
-            xml_return.xpath("//field[@id='b39']").each do |recode|
-              if recode.content.to_s === '00'
-                #OK
-                xml_return.xpath("//field[@id='b12']").each do |hour_transaction|
-                  order_model.hour_transaction = hour_transaction.content.to_s
-                end
-                xml_return.xpath("//field[@id='b13']").each do |date_transaction|
-                  order_model.date_transaction = date_transaction.content.to_s
-                end
-                xml_return.xpath("//subcampo[@id='6Db63']").each do |bonus_amount|
-                  order_model.bonus_amount = bonus_amount.content.to_i
-                end
-                xml_return.xpath("//subcampo[@id='6Eb63']").each do |new_balance|
-                  order_model.new_balance = new_balance.content.to_i
-                end
-                xml_return.xpath("//subcampo[@id='6Fb63']").each do |validity|
-                  order_model.validity = validity.content.to_s
-                end
-                xml_return.xpath("//subcampo[@id='6Gb63']").each do |response|
-                  order_model.response = response.content.to_s
-                end
-                xml_return.xpath("//subcampo[@id='9Eb63']").each do |identification|
-                  order_model.identification = identification.content.to_s
-                end
-                xml_return.xpath("//subcampo[@id='69b63']").each do |auth_code|
-                  order_model.auth_code = auth_code.content.to_s
-                end
-                #PAY SUCCESS
-                order_model.status = 4
-                order_model.save
-                render json: 'ok', status: 200
-              else
-                #RETRY
-                #PAY ERROR
-                order_model.response << xml_return
-                order_model.status = 6
-                order_model.response << "intento: #{code.content.to_s} reintento error: #{recode.content.to_s}"
-                order_model.save
-                render json: 'ok', status: 200
-              end
-            end
+            #MANUAL
+            order_model.status = 8
+            order_model.save
+            render json: 'ok', status: 200
           end
         end
       elsif status == 6
