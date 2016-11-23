@@ -59,6 +59,8 @@ class V1::ValidateController < ApplicationController
       render json: order_model.status, status: 200
     elsif order_model.status == 6
       render json: 6, status: 400
+    elsif order_model.status == 8
+      render json: 8, status: 400
     else
       render json: order_model.status, status: 200
     end
