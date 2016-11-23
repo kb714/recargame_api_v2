@@ -19,6 +19,7 @@ class V1::PayNotifyController < ApplicationController
         if xml_return == 'ERROR'
           xml_return = sendXmlPincenterApi(re_confirm(order_model.amount, order_model.identifier,
                                                       order_model.company, order_model.auth_code, order_model.order))
+          order_model.response = 'Primer ERROR reintento|'
           if xml_return == 'ERROR'
             order_model.response << xml_return
             order_model.status = 6
