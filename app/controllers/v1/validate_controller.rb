@@ -1,13 +1,9 @@
 class V1::ValidateController < ApplicationController
+  require_relative '../../views/xml/xml_documents'
 
   def index
-    #V1::Order.delete_all
-    data = V1::Order.order(:created_at => 'desc').all
-    if data.exists?
-      render json: JSON.pretty_generate(JSON.parse(data.to_json))
-    else
-      render json: "no content"
-    end
+    xml_document = XmlDocuments.new('5000', '959595', 02, 12345678)
+    render json: xml_document.is_valid.to_s
   end
 
   def validate_operation
@@ -19,12 +15,12 @@ class V1::ValidateController < ApplicationController
     if order_model.valid?
       order_model.save
       #API validation
-      xml_return = sendXmlPincenterApi(ifIsValid(order_model.amount,
-                                                 order_model.identifier,
-                                                 company_decode, order_model.order))
+      xml_document = XmlDocuments.new(order_model.amount, order_model.identifier, company_decode, order_model.order)
+      xml_return = sendXmlPincenterApi(xml_document.validate.to_s)
       if xml_return == 'ERROR'
-        return render json: "TIMEOUT", status: 400
+        return render json: "TIMEOUT", status: :bad_request
       end
+      #view XML
       xml_return.xpath("//field[@id='b39']").each do |value|
         if value.content.to_s === '00'
           # save order on local database and set auth code
@@ -37,18 +33,24 @@ class V1::ValidateController < ApplicationController
           concatenate = "PP_AMOUNT=#{order_model.amount}&PP_ORDER=#{order_model.order}"
           digest = OpenSSL::Digest.new('sha256')
           hash = OpenSSL::HMAC.hexdigest(digest, key, concatenate)
-          response = {pp_shop: self.get_pp_shop, pp_amount: order_model.amount, pp_order: order_model.order,
-                      pp_product: "Recarga #{data[:company]}", pp_service: "Recarga #{order_model.identifier}",
-                      pp_name: "Recargame.cl DEV ENV", pp_hash: hash}
+          response = {
+              pp_shop: self.get_pp_shop,
+              pp_amount: order_model.amount,
+              pp_order: order_model.order,
+              pp_product: "Recarga #{data[:company]}",
+              pp_service: "Recarga #{order_model.identifier}",
+              pp_name: "Recargame.cl DEV ENV",
+              pp_hash: hash
+          }
           #send data to client
-          return render json: response, status: 200
+          return render json: response, status: :ok
         else
-          return render json: "#{company_decode.to_s} #{value.content.to_s}", status: 400
+          return render json: "#{company_decode.to_s} #{value.content.to_s}", status: :bad_request
         end
       end
-      render json: 'Error validando los datos de la compañía', status: 400
+      render json: 'Error validando los datos de la compañía', status: :bad_request
     else
-      render json: order_model.errors.messages, status: 400
+      render json: order_model.errors.messages, status: :bad_request
     end
   end
 
@@ -73,38 +75,5 @@ class V1::ValidateController < ApplicationController
 
   def validate_pay_params
     params.permit(:order)
-  end
-
-  #pincenter XML, unnused order parameter
-  def ifIsValid(amount, identifier, company, order)
-    t = Time.now - 10800
-    Nokogiri::Slop <<-EOXML
-      <isomsg>
-        <field id="b0">0300</field>
-        <field id="b3">510000</field>
-        <field id="b4">#{amount.to_s}</field>
-        <field id="b11">#{order.to_s}</field>
-        <field id="b12">#{t.strftime('%H%M%S').to_s}</field>
-        <field id="b13">#{t.strftime('%Y%m%d').to_s}</field>
-        <field id="b24">9999</field>
-        <field id="b25">02</field>
-        <field id="b41">00000004</field>
-        <field id="b63">
-          <subcampo id="00b63">RECARGA0API0V1</subcampo>
-          <subcampo id="03b63">0013</subcampo>
-          <subcampo id="04b63">V002</subcampo>
-          <subcampo id="05b63">01</subcampo>
-          <subcampo id="06b63">99</subcampo>
-          <subcampo id="11b63">0064</subcampo>
-          <subcampo id="12b63">361988</subcampo>
-          <subcampo id="14b63">361988</subcampo>
-          <subcampo id="15b63">000381</subcampo>
-          <subcampo id="20b63">#{order.to_s}</subcampo>
-          <subcampo id="61b63">#{company.to_s}</subcampo>
-          <subcampo id="65b63">#{identifier.to_s}</subcampo>
-          <subcampo id="66b63">S</subcampo>
-         </field>
-      </isomsg>
-    EOXML
   end
 end
