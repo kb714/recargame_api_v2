@@ -45,7 +45,7 @@ class V1::ValidateController < ApplicationController
           #send data to client
           return render json: response, status: :ok
         else
-          return render json: "#{company_decode.to_s} #{value.content.to_s}", status: :bad_request
+          return render json: "#{company_decode.to_s}-#{value.content.to_s}", status: :bad_request
         end
       end
       render json: 'Error validando los datos de la compañía', status: :bad_request
