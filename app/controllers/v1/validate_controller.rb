@@ -3,7 +3,7 @@ class V1::ValidateController < ApplicationController
 
   def index
     xml_document = XmlDocuments.new('5000', '959595', 02, 12345678)
-    render json: xml_document.is_valid.to_s
+    render json: xml_document.validate.to_s
   end
 
   def validate_operation
